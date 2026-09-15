@@ -77,11 +77,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "區塊鏈小學堂｜穩定幣與 RWA 互動學習" },
+      {
+        name: "description",
+        content: "用互動翻轉卡片與測驗，快速搞懂穩定幣、監管儲備、RWA 代幣化與 AI Agent 鏈上支付。",
+      },
+      { name: "author", content: "區塊鏈小學堂" },
+      { property: "og:title", content: "區塊鏈小學堂｜穩定幣與 RWA 互動學習" },
+      {
+        property: "og:description",
+        content: "用互動翻轉卡片與測驗，快速搞懂穩定幣、監管儲備、RWA 代幣化與 AI Agent 鏈上支付。",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
