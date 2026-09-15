@@ -16,6 +16,7 @@ export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string)
         role="button"
         tabIndex={0}
         aria-pressed={flipped}
+        aria-label={`${topic.title}｜點擊翻轉卡片`}
         onClick={toggle}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
