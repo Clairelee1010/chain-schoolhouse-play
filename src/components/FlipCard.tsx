@@ -11,7 +11,7 @@ export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string)
   };
 
   return (
-    <div className="flip-scene h-[520px] sm:h-[500px]">
+    <div className="flip-scene h-[620px] sm:h-[600px]">
       <div
         role="button"
         tabIndex={0}
