@@ -7,6 +7,7 @@ export type Topic = {
   front: string;
   points: Point[];
   glossary: { term: string; desc: string }[];
+  furtherReading: { label: string; url: string };
 };
 
 export const topics: Topic[] = [
@@ -43,6 +44,10 @@ export const topics: Topic[] = [
       { term: "錨定 (Peg)", desc: "將數位資產與另一項資產按固定比例連動。" },
       { term: "脫鉤 (Depeg)", desc: "穩定幣價格明顯偏離原本錨定的價格。" },
     ],
+    furtherReading: {
+      label: "GENIUS Act 官方重點整理",
+      url: "https://www.whitehouse.gov/fact-sheets/2025/07/fact-sheet-president-donald-j-trump-signs-genius-act-into-law/",
+    },
   },
   {
     id: "regulation",
@@ -80,6 +85,10 @@ export const topics: Topic[] = [
       },
       { term: "重複抵押 (Rehypothecation)", desc: "把客戶的抵押品拿去二次抵押或借貸的行為。" },
     ],
+    furtherReading: {
+      label: "歐盟 MiCA 法規官方說明",
+      url: "https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/markets-crypto-assets-regulation-mica",
+    },
   },
   {
     id: "rwa",
@@ -117,6 +126,10 @@ export const topics: Topic[] = [
       { term: "代幣化 (Tokenization)", desc: "將實體資產的所有權或價值轉換成鏈上數位代幣。" },
       { term: "預言機 (Oracle)", desc: "將現實世界數據安全導入區塊鏈智能合約的橋樑。" },
     ],
+    furtherReading: {
+      label: "RWA 代幣化深度解析",
+      url: "https://www.learningcrypto.com/resources/real-world-assets",
+    },
   },
   {
     id: "future",
@@ -154,6 +167,10 @@ export const topics: Topic[] = [
       },
       { term: "零知識證明", desc: "在不暴露背後具體數據的情況下，證明某項陳述確實為真。" },
     ],
+    furtherReading: {
+      label: "x402 協議介紹（Alchemy）",
+      url: "https://www.alchemy.com/blog/how-x402-brings-real-time-crypto-payments-to-the-web",
+    },
   },
 ];
 
