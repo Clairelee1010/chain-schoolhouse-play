@@ -105,6 +105,7 @@ export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string)
           <p className="mt-4 text-center text-xs text-muted-foreground">點擊卡片翻回正面</p>
         </div>
       </div>
+      {showAnim && <ThemeAnimation topicId={topic.id} onClose={() => setShowAnim(false)} />}
     </div>
   );
 }
