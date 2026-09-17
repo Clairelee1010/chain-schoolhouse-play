@@ -54,6 +54,7 @@ export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string)
             >
               {topic.icon}
             </button>
+            <p className="mt-1 text-xs text-deep-foreground/60">👆 點圖示看動畫</p>
             <h3 className="mt-6 text-2xl font-bold leading-snug">{topic.title}</h3>
             <p className="mt-4 text-base leading-relaxed text-deep-foreground/80">{topic.front}</p>
           </div>
