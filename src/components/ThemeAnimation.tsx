@@ -155,6 +155,7 @@ export function ThemeAnimation({ topicId, onClose }: { topicId: string; onClose:
         <div className="mt-4 overflow-hidden rounded-2xl bg-muted/50">{scene.body}</div>
         <p className="mt-4 text-center text-sm leading-relaxed text-muted-foreground">{scene.caption}</p>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
