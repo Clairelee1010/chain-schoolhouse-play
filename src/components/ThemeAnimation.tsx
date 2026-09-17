@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 
 const scenes: Record<string, { title: string; caption: string; body: React.ReactNode }> = {
   stablecoin: {
@@ -87,7 +88,7 @@ export function ThemeAnimation({ topicId, onClose }: { topicId: string; onClose:
 
   if (!scene) return null;
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
       role="dialog"
