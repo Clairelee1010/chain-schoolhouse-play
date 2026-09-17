@@ -77,6 +77,17 @@ export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string)
               ))}
             </dl>
           </div>
+          {topic.furtherReading && (
+            <a
+              href={topic.furtherReading.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 block rounded-full bg-primary px-4 py-2.5 text-center text-sm font-bold text-primary-foreground transition-transform hover:scale-[1.02]"
+              aria-label={`延伸閱讀：${topic.furtherReading.label}（開新分頁）`}
+            >
+              延伸閱讀：{topic.furtherReading.label} 🔗
+            </a>
+          )}
           <p className="mt-4 text-center text-xs text-muted-foreground">點擊卡片翻回正面</p>
         </div>
       </div>
