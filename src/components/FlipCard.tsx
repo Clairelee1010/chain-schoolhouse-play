@@ -1,8 +1,10 @@
 import { useState } from "react";
 import type { Topic } from "@/lib/course-data";
+import { ThemeAnimation } from "@/components/ThemeAnimation";
 
 export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string) => void }) {
   const [flipped, setFlipped] = useState(false);
+  const [showAnim, setShowAnim] = useState(false);
 
   const toggle = () => {
     const next = !flipped;
@@ -39,7 +41,19 @@ export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string)
             </span>
           </div>
           <div>
-            <div className="animate-float text-6xl">{topic.icon}</div>
+            <button
+              type="button"
+              aria-label={`播放「${topic.title}」主題動畫`}
+              title="點我看動畫"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowAnim(true);
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              className="animate-float cursor-pointer rounded-2xl text-6xl outline-none transition-transform hover:scale-125 focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              {topic.icon}
+            </button>
             <h3 className="mt-6 text-2xl font-bold leading-snug">{topic.title}</h3>
             <p className="mt-4 text-base leading-relaxed text-deep-foreground/80">{topic.front}</p>
           </div>
