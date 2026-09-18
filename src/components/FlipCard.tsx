@@ -49,7 +49,10 @@ export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string)
                 e.stopPropagation();
                 setShowAnim(true);
               }}
-              onKeyDown={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                // 只攔截會觸發翻卡的按鍵，讓 Escape 等其他按鍵照常傳遞（供動畫彈窗關閉）
+                if (e.key === "Enter" || e.key === " ") e.stopPropagation();
+              }}
               className="animate-float cursor-pointer rounded-2xl text-6xl outline-none transition-transform hover:scale-125 focus-visible:ring-2 focus-visible:ring-accent"
             >
               {topic.icon}
