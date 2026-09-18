@@ -38,10 +38,17 @@ jobs:
         # GitHub Pages 服務於 /<repo-name>/ 子路徑，需覆寫 Vite base
         run: npm run build -- --base=/${{ github.event.repository.name }}/
 
+      - name: Prepare static site for GitHub Pages
+        # SPA 模式輸出在 dist/client；_shell.html 複製為 index.html 作為進入點，
+        # 並將 favicon 改為相對路徑以適應子路徑部署。
+        run: |
+          cp dist/client/_shell.html dist/client/index.html
+          sed -i 's|href="/favicon.ico"|href="./favicon.ico"|g' dist/client/index.html
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./dist/client
 
   deploy:
     environment:
