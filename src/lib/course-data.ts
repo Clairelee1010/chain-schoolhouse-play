@@ -273,3 +273,14 @@ export function getGrade(score: number): Grade {
 }
 
 export const skillLabels = ["穩定幣機制", "合規儲備", "RWA 代幣化", "AI 支付", "風險意識"];
+
+// ---- 語言切換 ----
+import type { Lang } from "./i18n";
+import { topicsEn, questionsEn, getGradeEn, skillLabelsEn } from "./course-data-en";
+
+export const getTopics = (lang: Lang): Topic[] => (lang === "en" ? topicsEn : topics);
+export const getQuestions = (lang: Lang): Question[] => (lang === "en" ? questionsEn : questions);
+export const getGradeFor = (score: number, lang: Lang): Grade =>
+  lang === "en" ? getGradeEn(score) : getGrade(score);
+export const getSkillLabels = (lang: Lang): string[] =>
+  lang === "en" ? skillLabelsEn : skillLabels;

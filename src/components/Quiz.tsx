@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
-import { questions, getGrade, skillLabels } from "@/lib/course-data";
+import { getQuestions, getGradeFor, getSkillLabels } from "@/lib/course-data";
+import { useLang } from "@/lib/i18n";
 import { RadarChart } from "./RadarChart";
 
 const letters = ["A", "B", "C", "D"];
@@ -9,12 +10,16 @@ export function Quiz({ onAnsweredChange }: { onAnsweredChange: (count: number) =
   const [picked, setPicked] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
+  const { lang, t } = useLang();
+
+  const questions = getQuestions(lang);
+  const skillLabels = getSkillLabels(lang);
 
   const answeredCount = Object.keys(picked).length;
   useEffect(() => onAnsweredChange(answeredCount), [answeredCount, onAnsweredChange]);
 
   const score = questions.filter((q) => picked[q.id] === q.answer).length;
-  const grade = getGrade(score);
+  const grade = getGradeFor(score, lang);
 
   const submit = () => {
     setSubmitted(true);
@@ -45,10 +50,10 @@ export function Quiz({ onAnsweredChange }: { onAnsweredChange: (count: number) =
     return (
       <div ref={resultRef} className="animate-rise surface-card glow mx-auto max-w-2xl rounded-3xl">
         <div className="gradient-hero grid-glow rounded-t-3xl px-8 py-10 text-center text-deep-foreground">
-          <p className="text-sm tracking-[0.3em] text-deep-foreground/70">結算成績單</p>
+          <p className="text-sm tracking-[0.3em] text-deep-foreground/70">{t.reportTitle}</p>
           <div className="mt-4 text-6xl">{grade.medal}</div>
           <p className="mt-4 font-display text-5xl font-bold">{score * 20}</p>
-          <p className="text-sm text-deep-foreground/70">/ 100 分 ・ 答對 {score} / 5 題</p>
+          <p className="text-sm text-deep-foreground/70">{t.scoreOf(score)}</p>
           <h3 className="mt-4 text-xl font-bold text-accent">{grade.title}</h3>
         </div>
 
@@ -83,7 +88,7 @@ export function Quiz({ onAnsweredChange }: { onAnsweredChange: (count: number) =
             onClick={reset}
             className="mt-6 w-full rounded-full bg-primary px-6 py-3.5 font-bold text-primary-foreground transition-transform hover:scale-[1.02]"
           >
-            重新挑戰 🔁
+            {t.retry}
           </button>
         </div>
       </div>
@@ -130,7 +135,7 @@ export function Quiz({ onAnsweredChange }: { onAnsweredChange: (count: number) =
             {answered && (
               <div className="animate-rise mt-4 rounded-2xl border border-accent/40 bg-accent/10 p-4 text-sm">
                 <p className="font-bold text-accent-foreground dark:text-accent">
-                  {choice === q.answer ? "✅ 答對了！" : `❌ 答錯了，正解是 (${letters[q.answer]})`}
+                  {choice === q.answer ? t.correct : t.wrong(letters[q.answer])}
                 </p>
                 <p className="mt-1 leading-relaxed text-muted-foreground">{q.explain}</p>
               </div>
@@ -145,8 +150,8 @@ export function Quiz({ onAnsweredChange }: { onAnsweredChange: (count: number) =
         className="w-full rounded-full bg-primary px-6 py-4 font-bold text-primary-foreground transition-transform enabled:hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-40"
       >
         {answeredCount < questions.length
-          ? `還有 ${questions.length - answeredCount} 題未作答`
-          : "提交並查看我的評級 🏆"}
+          ? t.remaining(questions.length - answeredCount)
+          : t.submit}
       </button>
     </div>
   );
