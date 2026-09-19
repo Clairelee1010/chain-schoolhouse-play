@@ -1,10 +1,12 @@
 import { useState } from "react";
 import type { Topic } from "@/lib/course-data";
 import { ThemeAnimation } from "@/components/ThemeAnimation";
+import { useLang } from "@/lib/i18n";
 
 export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string) => void }) {
   const [flipped, setFlipped] = useState(false);
   const [showAnim, setShowAnim] = useState(false);
+  const { t } = useLang();
 
   const toggle = () => {
     const next = !flipped;
@@ -18,7 +20,7 @@ export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string)
         role="button"
         tabIndex={0}
         aria-pressed={flipped}
-        aria-label={`${topic.title}｜點擊翻轉卡片`}
+        aria-label={t.cardAria(topic.title)}
         onClick={toggle}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -37,14 +39,14 @@ export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string)
               {topic.index}
             </span>
             <span className="rounded-full bg-background/10 px-3 py-1 text-xs font-medium text-deep-foreground/80 backdrop-blur">
-              點擊翻轉
+              {t.tapToFlip}
             </span>
           </div>
           <div>
             <button
               type="button"
-              aria-label={`播放「${topic.title}」主題動畫`}
-              title="點我看動畫"
+              aria-label={t.iconAria(topic.title)}
+              title={t.iconHint}
               onClick={(e) => {
                 e.stopPropagation();
                 setShowAnim(true);
@@ -57,13 +59,13 @@ export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string)
             >
               {topic.icon}
             </button>
-            <p className="mt-1 text-xs text-deep-foreground/60">👆 點圖示看動畫</p>
+            <p className="mt-1 text-xs text-deep-foreground/60">{t.iconHint}</p>
             <h3 className="mt-6 text-2xl font-bold leading-snug">{topic.title}</h3>
             <p className="mt-4 text-base leading-relaxed text-deep-foreground/80">{topic.front}</p>
           </div>
           <div className="flex items-center gap-2 text-sm text-accent">
             <span className="h-2 w-2 rounded-full bg-accent" />
-            翻開看四大重點與學習教室
+            {t.flipHint}
           </div>
         </div>
 
@@ -85,7 +87,7 @@ export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string)
             ))}
           </ul>
           <div className="mt-4 rounded-2xl border border-accent/40 bg-accent/10 p-4">
-            <p className="text-sm font-bold">💡 學習教室</p>
+            <p className="text-sm font-bold">{t.classroom}</p>
             <dl className="mt-2 space-y-2">
               {topic.glossary.map((g) => (
                 <div key={g.term} className="text-sm">
@@ -101,12 +103,12 @@ export function FlipCard({ topic, onRead }: { topic: Topic; onRead: (id: string)
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 block rounded-full bg-primary px-4 py-2.5 text-center text-sm font-bold text-primary-foreground transition-transform hover:scale-[1.02]"
-              aria-label={`延伸閱讀：${topic.furtherReading.label}（開新分頁）`}
+              aria-label={t.furtherAria(topic.furtherReading.label)}
             >
-              延伸閱讀：{topic.furtherReading.label} 🔗
+              {t.further}: {topic.furtherReading.label} 🔗
             </a>
           )}
-          <p className="mt-4 text-center text-xs text-muted-foreground">點擊卡片翻回正面</p>
+          <p className="mt-4 text-center text-xs text-muted-foreground">{t.backHint}</p>
         </div>
       </div>
       {showAnim && <ThemeAnimation topicId={topic.id} onClose={() => setShowAnim(false)} />}

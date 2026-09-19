@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
-import { topics, questions } from "@/lib/course-data";
+import { Moon, Sun, Languages } from "lucide-react";
+import { getTopics, getQuestions } from "@/lib/course-data";
 import { FlipCard } from "@/components/FlipCard";
 import { Quiz } from "@/components/Quiz";
+import { LanguageProvider, useLang } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "四張 3D 翻轉知識卡加 5 題測驗，快速看懂穩定幣種類、GENIUS Act 儲備法規、RWA 代幣化與 AI Agent x402 鏈上支付。",
+          "四張 3D 翻轉知識卡加 5 題測驗，快速看懂穩定幣種類、GENIUS Act 儲備法規、RWA 代幣化與 AI Agent x402 鏈上支付。中英雙語切換。",
       },
       { property: "og:title", content: "區塊鏈小學堂｜穩定幣・RWA・AI 支付互動學習" },
       {
@@ -27,9 +28,21 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  return (
+    <LanguageProvider>
+      <Page />
+    </LanguageProvider>
+  );
+}
+
+function Page() {
+  const { lang, setLang, t } = useLang();
   const [dark, setDark] = useState(false);
   const [read, setRead] = useState<string[]>([]);
   const [answered, setAnswered] = useState(0);
+
+  const topics = getTopics(lang);
+  const questions = getQuestions(lang);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
@@ -47,8 +60,8 @@ function Index() {
     <main className="min-h-screen bg-background">
       {/* 進度條 */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-3">
-          <span className="font-display text-sm font-bold">⛓️ 區塊鏈小學堂</span>
+        <div className="mx-auto flex max-w-6xl items-center gap-3 px-5 py-3">
+          <span className="font-display text-sm font-bold">{t.brand}</span>
           <div className="flex flex-1 items-center gap-3">
             <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
               <div
@@ -61,8 +74,16 @@ function Index() {
             </span>
           </div>
           <button
+            onClick={() => setLang(lang === "zh" ? "en" : "zh")}
+            aria-label={t.toggleLang}
+            className="flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-xs font-bold transition-colors hover:bg-muted"
+          >
+            <Languages className="h-4 w-4" />
+            {lang === "zh" ? "EN" : "中文"}
+          </button>
+          <button
             onClick={() => setDark((d) => !d)}
-            aria-label="切換深色模式"
+            aria-label={t.toggleDark}
             className="rounded-full border border-border p-2 transition-colors hover:bg-muted"
           >
             {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -74,52 +95,47 @@ function Index() {
       <section className="gradient-hero grid-glow relative overflow-hidden px-5 py-24 text-deep-foreground">
         <div className="mx-auto max-w-4xl text-center">
           <span className="rounded-full border border-accent/40 bg-accent/10 px-4 py-1.5 text-xs font-medium text-accent">
-            互動學習 ・ 4 張知識卡 ・ 5 題測驗
+            {t.heroBadge}
           </span>
           <h1 className="mt-6 text-4xl font-black leading-tight sm:text-6xl">
-            區塊鏈小學堂
+            {t.heroTitle}
             <br />
-            <span className="text-accent">穩定幣・RWA・AI 支付</span>
+            <span className="text-accent">{t.heroTitleAccent}</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-deep-foreground/80">
-            從價格避風港到合規儲備、從美債上鏈到 AI
-            代理人自動付款，用翻轉卡片與小測驗，一頁讀懂鏈上金融的關鍵知識。
+            {t.heroDesc}
           </p>
           <a
             href="#cards"
             className="mt-9 inline-flex rounded-full bg-accent px-7 py-3.5 font-bold text-accent-foreground transition-transform hover:scale-105"
           >
-            開始學習 ↓
+            {t.heroCta}
           </a>
         </div>
       </section>
 
       {/* 翻轉卡 */}
       <section id="cards" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-20">
-        <h2 className="text-center text-3xl font-bold">四大主題互動學習卡</h2>
-        <p className="mt-3 text-center text-muted-foreground">
-          點擊卡片翻面，看重點整理、金句與學習教室名詞解釋
-        </p>
+        <h2 className="text-center text-3xl font-bold">{t.cardsTitle}</h2>
+        <p className="mt-3 text-center text-muted-foreground">{t.cardsDesc}</p>
         <div className="mt-12 grid gap-8 md:grid-cols-2">
-          {topics.map((t) => (
-            <FlipCard key={t.id} topic={t} onRead={markRead} />
+          {topics.map((tp) => (
+            <FlipCard key={tp.id} topic={tp} onRead={markRead} />
           ))}
         </div>
       </section>
 
       {/* 測驗 */}
       <section className="border-t border-border bg-muted/40 px-5 py-20">
-        <h2 className="text-center text-3xl font-bold">挑戰區塊鏈小學堂 🏆</h2>
-        <p className="mt-3 text-center text-muted-foreground">
-          5 題單選，作答後立即顯示對錯與解析；全部完成即可查看你的評級
-        </p>
+        <h2 className="text-center text-3xl font-bold">{t.quizTitle}</h2>
+        <p className="mt-3 text-center text-muted-foreground">{t.quizDesc}</p>
         <div className="mt-12">
           <Quiz onAnsweredChange={setAnswered} />
         </div>
       </section>
 
       <footer className="border-t border-border px-5 py-10 text-center text-sm text-muted-foreground">
-        ⛓️ 區塊鏈小學堂 ・ 本頁內容僅供教育學習，不構成投資建議
+        {t.footer}
       </footer>
     </main>
   );

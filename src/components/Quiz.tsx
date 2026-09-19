@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
-import { questions, getGrade, skillLabels } from "@/lib/course-data";
+import { getQuestions, getGradeFor, getSkillLabels } from "@/lib/course-data";
+import { useLang } from "@/lib/i18n";
 import { RadarChart } from "./RadarChart";
 
 const letters = ["A", "B", "C", "D"];
@@ -9,12 +10,16 @@ export function Quiz({ onAnsweredChange }: { onAnsweredChange: (count: number) =
   const [picked, setPicked] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
+  const { lang, t } = useLang();
+
+  const questions = getQuestions(lang);
+  const skillLabels = getSkillLabels(lang);
 
   const answeredCount = Object.keys(picked).length;
   useEffect(() => onAnsweredChange(answeredCount), [answeredCount, onAnsweredChange]);
 
   const score = questions.filter((q) => picked[q.id] === q.answer).length;
-  const grade = getGrade(score);
+  const grade = getGradeFor(score, lang);
 
   const submit = () => {
     setSubmitted(true);
