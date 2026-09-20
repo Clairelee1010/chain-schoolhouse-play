@@ -1,5 +1,25 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useLang } from "@/lib/i18n";
+
+const textEn: Record<string, { title: string; caption: string }> = {
+  stablecoin: {
+    title: "USDT bank passbook",
+    caption: "For every USDT issued, one real dollar sits in reserve 💵",
+  },
+  regulation: {
+    title: "Compliance shield",
+    caption: "The GENIUS Act and MiCA stamp stablecoins as compliant 🛡️",
+  },
+  rwa: {
+    title: "Assets going on-chain",
+    caption: "Homes and Treasuries become tokens that trade 24/7 🏠➡️🪙",
+  },
+  future: {
+    title: "AI agent pays by itself",
+    caption: "An AI agent settles in stablecoins via the x402 protocol 🤖⚡",
+  },
+};
 
 const scenes: Record<string, { title: string; caption: string; body: React.ReactNode }> = {
   stablecoin: {
@@ -76,7 +96,10 @@ const scenes: Record<string, { title: string; caption: string; body: React.React
 };
 
 export function ThemeAnimation({ topicId, onClose }: { topicId: string; onClose: () => void }) {
-  const scene = scenes[topicId];
+  const { lang, t } = useLang();
+  const base = scenes[topicId];
+  const scene =
+    base && lang === "en" && textEn[topicId] ? { ...base, ...textEn[topicId] } : base;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -146,7 +169,7 @@ export function ThemeAnimation({ topicId, onClose }: { topicId: string; onClose:
           <button
             type="button"
             onClick={onClose}
-            aria-label="關閉動畫"
+            aria-label={t.closeAnim}
             className="rounded-full bg-muted px-3 py-1.5 text-sm font-bold text-muted-foreground transition-transform hover:scale-105"
           >
             ✕

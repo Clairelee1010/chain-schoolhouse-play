@@ -135,7 +135,7 @@ export function Quiz({ onAnsweredChange }: { onAnsweredChange: (count: number) =
             {answered && (
               <div className="animate-rise mt-4 rounded-2xl border border-accent/40 bg-accent/10 p-4 text-sm">
                 <p className="font-bold text-accent-foreground dark:text-accent">
-                  {choice === q.answer ? t.correct : t.wrong(letters[q.answer])}
+                  {choice === q.answer ? t.correct : t.wrong(letters[q.answer] ?? "")}
                 </p>
                 <p className="mt-1 leading-relaxed text-muted-foreground">{q.explain}</p>
               </div>
