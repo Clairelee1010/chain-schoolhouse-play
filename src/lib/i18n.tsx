@@ -4,6 +4,7 @@ export type Lang = "zh" | "en";
 
 type UI = {
   brand: string;
+  progressLabel: string;
   toggleDark: string;
   toggleLang: string;
   heroBadge: string;
@@ -39,6 +40,7 @@ type UI = {
 
 const zh: UI = {
   brand: "⛓️ 區塊鏈小學堂",
+  progressLabel: "學習進度",
   toggleDark: "切換深色模式",
   toggleLang: "切換語言",
   heroBadge: "互動學習 ・ 4 張知識卡 ・ 5 題測驗",
@@ -73,6 +75,7 @@ const zh: UI = {
 
 const en: UI = {
   brand: "⛓️ Blockchain School",
+  progressLabel: "Learning progress",
   toggleDark: "Toggle dark mode",
   toggleLang: "Switch language",
   heroBadge: "Interactive ・ 4 flip cards ・ 5 questions",

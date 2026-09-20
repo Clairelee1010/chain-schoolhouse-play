@@ -62,16 +62,24 @@ function Page() {
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-5 py-3">
           <span className="font-display text-sm font-bold">{t.brand}</span>
-          <div className="flex flex-1 items-center gap-3">
-            <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <div className="flex items-center justify-between gap-2 text-xs font-bold text-muted-foreground">
+              <span className="truncate">{t.progressLabel}</span>
+              <span className="shrink-0 font-display">{progress}%</span>
+            </div>
+            <div
+              className="h-2 overflow-hidden rounded-full bg-muted"
+              role="progressbar"
+              aria-label={t.progressLabel}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={progress}
+            >
               <div
                 className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-700 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <span className="w-12 text-right font-display text-xs font-bold text-muted-foreground">
-              {progress}%
-            </span>
           </div>
           <button
             onClick={() => setLang(lang === "zh" ? "en" : "zh")}
