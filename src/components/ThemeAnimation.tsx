@@ -169,7 +169,7 @@ export function ThemeAnimation({ topicId, onClose }: { topicId: string; onClose:
           <button
             type="button"
             onClick={onClose}
-            aria-label="關閉動畫"
+            aria-label={t.closeAnim}
             className="rounded-full bg-muted px-3 py-1.5 text-sm font-bold text-muted-foreground transition-transform hover:scale-105"
           >
             ✕
