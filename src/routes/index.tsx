@@ -4,6 +4,7 @@ import { Moon, Sun, Languages } from "lucide-react";
 import { getTopics, getQuestions } from "@/lib/course-data";
 import { FlipCard } from "@/components/FlipCard";
 import { Quiz } from "@/components/Quiz";
+import { Button } from "@/components/ui/button";
 import { LanguageProvider, useLang } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
@@ -60,8 +61,8 @@ function Page() {
     <main className="min-h-screen bg-background">
       {/* 進度條 */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center gap-3 px-5 py-3">
-          <span className="font-display text-sm font-bold">{t.brand}</span>
+        <div className="mx-auto flex max-w-6xl items-center gap-2 px-3 py-3 sm:gap-3 sm:px-5">
+          <span className="hidden font-display text-sm font-bold sm:block">{t.brand}</span>
           <div className="flex min-w-0 flex-1 flex-col gap-1.5">
             <div className="flex items-center justify-between gap-2 text-xs font-bold text-muted-foreground">
               <span className="truncate">{t.progressLabel}</span>
@@ -81,21 +82,43 @@ function Page() {
               />
             </div>
           </div>
-          <button
-            onClick={() => setLang(lang === "zh" ? "en" : "zh")}
+          <div
+            className="flex shrink-0 items-center rounded-lg border-2 border-primary bg-background p-1 shadow-sm"
+            role="group"
             aria-label={t.toggleLang}
-            className="flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-xs font-bold transition-colors hover:bg-muted"
           >
-            <Languages className="h-4 w-4" />
-            {lang === "zh" ? "EN" : "中文"}
-          </button>
-          <button
+            <Languages className="mx-1 h-4 w-4 text-primary" aria-hidden="true" />
+            <Button
+              type="button"
+              size="sm"
+              variant={lang === "zh" ? "default" : "ghost"}
+              onClick={() => setLang("zh")}
+              aria-pressed={lang === "zh"}
+              className="h-8 rounded-md px-2.5 font-bold sm:px-3"
+            >
+              中文
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={lang === "en" ? "default" : "ghost"}
+              onClick={() => setLang("en")}
+              aria-pressed={lang === "en"}
+              className="h-8 rounded-md px-2.5 font-bold sm:px-3"
+            >
+              EN
+            </Button>
+          </div>
+          <Button
+            type="button"
+            size="icon"
+            variant="outline"
             onClick={() => setDark((d) => !d)}
             aria-label={t.toggleDark}
-            className="rounded-full border border-border p-2 transition-colors hover:bg-muted"
+            className="shrink-0 rounded-full"
           >
             {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </button>
+          </Button>
         </div>
       </header>
 
