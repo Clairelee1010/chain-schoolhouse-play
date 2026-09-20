@@ -96,7 +96,10 @@ const scenes: Record<string, { title: string; caption: string; body: React.React
 };
 
 export function ThemeAnimation({ topicId, onClose }: { topicId: string; onClose: () => void }) {
-  const scene = scenes[topicId];
+  const { lang, t } = useLang();
+  const base = scenes[topicId];
+  const scene =
+    base && lang === "en" && textEn[topicId] ? { ...base, ...textEn[topicId] } : base;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
