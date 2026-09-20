@@ -1,5 +1,25 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useLang } from "@/lib/i18n";
+
+const textEn: Record<string, { title: string; caption: string }> = {
+  stablecoin: {
+    title: "USDT bank passbook",
+    caption: "For every USDT issued, one real dollar sits in reserve 💵",
+  },
+  regulation: {
+    title: "Compliance shield",
+    caption: "The GENIUS Act and MiCA stamp stablecoins as compliant 🛡️",
+  },
+  rwa: {
+    title: "Assets going on-chain",
+    caption: "Homes and Treasuries become tokens that trade 24/7 🏠➡️🪙",
+  },
+  future: {
+    title: "AI agent pays by itself",
+    caption: "An AI agent settles in stablecoins via the x402 protocol 🤖⚡",
+  },
+};
 
 const scenes: Record<string, { title: string; caption: string; body: React.ReactNode }> = {
   stablecoin: {
