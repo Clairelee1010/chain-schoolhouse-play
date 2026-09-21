@@ -29,6 +29,8 @@ type UI = {
   furtherAria: (label: string) => string;
   closeAnim: string;
   // Quiz
+  englishOriginal: string;
+  chineseTranslation: string;
   correct: string;
   wrong: (letter: string) => string;
   remaining: (n: number) => string;
@@ -64,6 +66,8 @@ const zh: UI = {
   further: "延伸閱讀",
   furtherAria: (l) => `延伸閱讀：${l}（開新分頁）`,
   closeAnim: "關閉動畫",
+  englishOriginal: "英文原句",
+  chineseTranslation: "中文翻譯",
   correct: "✅ 答對了！",
   wrong: (l) => `❌ 答錯了，正解是 (${l})`,
   remaining: (n) => `還有 ${n} 題未作答`,
@@ -100,6 +104,8 @@ const en: UI = {
   further: "Further reading",
   furtherAria: (l) => `Further reading: ${l} (opens in a new tab)`,
   closeAnim: "Close animation",
+  englishOriginal: "English original",
+  chineseTranslation: "Chinese translation",
   correct: "✅ Correct!",
   wrong: (l) => `❌ Not quite — the answer is (${l})`,
   remaining: (n) => `${n} question${n > 1 ? "s" : ""} left`,

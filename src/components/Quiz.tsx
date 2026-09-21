@@ -13,6 +13,8 @@ export function Quiz({ onAnsweredChange }: { onAnsweredChange: (count: number) =
   const { lang, t } = useLang();
 
   const questions = getQuestions(lang);
+  const questionsZh = getQuestions("zh");
+  const questionsEn = getQuestions("en");
   const skillLabels = getSkillLabels(lang);
 
   const answeredCount = Object.keys(picked).length;
@@ -100,13 +102,30 @@ export function Quiz({ onAnsweredChange }: { onAnsweredChange: (count: number) =
       {questions.map((q, qi) => {
         const choice = picked[q.id];
         const answered = choice !== undefined;
+        const questionZh = questionsZh.find((item) => item.id === q.id);
+        const questionEn = questionsEn.find((item) => item.id === q.id);
         return (
           <div key={q.id} className="surface-card rounded-3xl p-6 sm:p-8">
-            <div className="flex items-start gap-3">
-              <span className="rounded-full bg-primary/10 px-3 py-1 font-display text-sm font-bold text-primary">
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3">
+              <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 font-display text-sm font-bold text-primary">
                 Q{qi + 1}
               </span>
-              <h3 className="pt-1 text-lg font-bold leading-snug">{q.q}</h3>
+              <div className="grid min-w-0 gap-3 md:grid-cols-2 md:gap-0 md:divide-x md:divide-border">
+                <div className="min-w-0 md:pr-5">
+                  <p className="text-xs font-bold text-primary">{t.englishOriginal}</p>
+                  <h3 lang="en" className="mt-1 text-base font-bold leading-relaxed sm:text-lg">
+                    {questionEn?.q}
+                  </h3>
+                </div>
+                <div className="min-w-0 border-t border-border pt-3 md:border-t-0 md:pl-5 md:pt-0">
+                  <p className="text-xs font-bold text-accent-foreground dark:text-accent">
+                    {t.chineseTranslation}
+                  </p>
+                  <p lang="zh-Hant" className="mt-1 text-base font-semibold leading-relaxed sm:text-lg">
+                    {questionZh?.q}
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {q.options.map((opt, oi) => {
