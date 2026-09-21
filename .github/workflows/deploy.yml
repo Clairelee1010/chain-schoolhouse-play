@@ -21,22 +21,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "npm"
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
 
       - name: Install dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile
 
       - name: Build
         # GitHub Pages 服務於 /<repo-name>/ 子路徑，需覆寫 Vite base
-        run: npm run build -- --base=/${{ github.event.repository.name }}/
+        run: bun run build --base=/${{ github.event.repository.name }}/
 
       - name: Prepare static site for GitHub Pages
         # SPA 模式輸出在 dist/client；_shell.html 複製為 index.html 作為進入點，
