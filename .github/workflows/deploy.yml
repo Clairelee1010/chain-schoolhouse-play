@@ -34,64 +34,124 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Build
-        # GitHub Pages serves this project under /<repo-name>/.
-        # Override the Vite base path so generated assets use the correct subpath.
-        run: bun run build --base=/${{ github.event.repository.name }}/
+        env:
+          GITHUB_PAGES: "true"
+        run: |
+          echo "=========================================="
+          echo "Building Block School Explorer"
+          echo "=========================================="
 
-      - name: Prepare static site for GitHub Pages
+          bun run build --base=/${{ github.event.repository.name }}/
+
+          echo ""
+          echo "Build completed."
+
+      - name: Prepare GitHub Pages artifact
+        id: prepare
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
 
           echo "=========================================="
-          echo "Preparing GitHub Pages static site"
+          echo "Detecting static build output"
           echo "=========================================="
-
-          if [ ! -d "dist/client" ]; then
-            echo "ERROR: dist/client directory does not exist."
-            echo "Build output:"
-            find dist -maxdepth 3 -type f 2>/dev/null || true
-            exit 1
-          fi
-
-          echo "Contents of dist/client:"
-          ls -la dist/client
-
-          # Current TanStack Start SPA builds may already generate index.html.
-          # Older output may provide _shell.html instead.
-          if [ -f "dist/client/index.html" ]; then
-            echo "PASS: index.html already exists."
-          elif [ -f "dist/client/_shell.html" ]; then
-            echo "INFO: _shell.html found. Creating index.html."
-            cp dist/client/_shell.html dist/client/index.html
-          else
-            echo "ERROR: Neither index.html nor _shell.html was generated."
-            echo "Available files:"
-            find dist/client -maxdepth 2 -type f
-            exit 1
-          fi
-
-          # Make the favicon path compatible with a GitHub Pages project site.
-          sed -i 's|href="/favicon.ico"|href="./favicon.ico"|g' dist/client/index.html
-
-          # SPA fallback:
-          # GitHub Pages serves 404.html for unknown routes.
-          # Using the SPA entry allows the client-side router to handle the route.
-          cp dist/client/index.html dist/client/404.html
 
           echo ""
-          echo "Final GitHub Pages files:"
-          ls -la dist/client
+          echo "Generated index.html files:"
+
+          INDEX_FILE="$(
+            find . \
+              -path "./node_modules" -prune -o \
+              -path "./.git" -prune -o \
+              -type f \
+              -name "index.html" \
+              -print \
+            | grep -E '^\./(dist|\.output|build|out)/' \
+            | head -n 1 || true
+          )"
+
+          if [ -z "$INDEX_FILE" ]; then
+            echo ""
+            echo "No generated index.html found."
+
+            echo ""
+            echo "Checking for _shell.html..."
+
+            SHELL_FILE="$(
+              find . \
+                -path "./node_modules" -prune -o \
+                -path "./.git" -prune -o \
+                -type f \
+                -name "_shell.html" \
+                -print \
+              | grep -E '^\./(dist|\.output|build|out)/' \
+              | head -n 1 || true
+            )"
+
+            if [ -z "$SHELL_FILE" ]; then
+              echo ""
+              echo "ERROR: No deployable index.html or _shell.html found."
+              echo ""
+              echo "Available build files:"
+              find dist .output build out \
+                -maxdepth 4 \
+                -type f \
+                2>/dev/null \
+                | sort \
+                | head -300 || true
+
+              exit 1
+            fi
+
+            SITE_DIR="$(dirname "$SHELL_FILE")"
+
+            echo "Found fallback shell:"
+            echo "$SHELL_FILE"
+
+            cp "$SHELL_FILE" "$SITE_DIR/index.html"
+            INDEX_FILE="$SITE_DIR/index.html"
+          fi
+
+          SITE_DIR="$(dirname "$INDEX_FILE")"
+
+          echo ""
+          echo "Static entry point:"
+          echo "$INDEX_FILE"
+
+          echo ""
+          echo "Static site directory:"
+          echo "$SITE_DIR"
+
+          # Make favicon compatible with GitHub Pages project subpath.
+          if [ -f "$SITE_DIR/index.html" ]; then
+            sed -i \
+              's|href="/favicon.ico"|href="./favicon.ico"|g' \
+              "$SITE_DIR/index.html"
+          fi
+
+          # SPA fallback for direct URL / refresh on GitHub Pages.
+          cp "$SITE_DIR/index.html" "$SITE_DIR/404.html"
+
+          echo ""
+          echo "Final site files:"
+          find "$SITE_DIR" \
+            -maxdepth 2 \
+            -type f \
+            | sort \
+            | head -200
+
+          echo ""
+          echo "site_dir=$SITE_DIR" >> "$GITHUB_OUTPUT"
 
           echo ""
           echo "=========================================="
-          echo "GitHub Pages static site prepared"
+          echo "Static site preparation: PASS"
           echo "=========================================="
 
-      - name: Upload artifact
+      - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist/client
+          path: ${{ steps.prepare.outputs.site_dir }}
 
   deploy:
     environment:
