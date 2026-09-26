@@ -27,131 +27,75 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Setup Pages
-        id: pages
         uses: actions/configure-pages@v5
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build
+      - name: Build for GitHub Pages
         env:
           GITHUB_PAGES: "true"
         run: |
-          echo "=========================================="
-          echo "Building Block School Explorer"
-          echo "=========================================="
+          bun run build --base=/chain-schoolhouse-play/
 
-          bun run build --base=/${{ github.event.repository.name }}/
-
-          echo ""
-          echo "Build completed."
-
-      - name: Prepare GitHub Pages artifact
-        id: prepare
+      - name: Prepare GitHub Pages static site
         shell: bash
         run: |
           set -euo pipefail
 
+          SITE_DIR=".output/public"
+
           echo "=========================================="
-          echo "Detecting static build output"
+          echo "Preparing Block School Explorer"
           echo "=========================================="
 
-          echo ""
-          echo "Generated index.html files:"
-
-          INDEX_FILE="$(
-            find . \
-              -path "./node_modules" -prune -o \
-              -path "./.git" -prune -o \
-              -type f \
-              -name "index.html" \
-              -print \
-            | grep -E '^\./(dist|\.output|build|out)/' \
-            | head -n 1 || true
-          )"
-
-          if [ -z "$INDEX_FILE" ]; then
-            echo ""
-            echo "No generated index.html found."
-
-            echo ""
-            echo "Checking for _shell.html..."
-
-            SHELL_FILE="$(
-              find . \
-                -path "./node_modules" -prune -o \
-                -path "./.git" -prune -o \
-                -type f \
-                -name "_shell.html" \
-                -print \
-              | grep -E '^\./(dist|\.output|build|out)/' \
-              | head -n 1 || true
-            )"
-
-            if [ -z "$SHELL_FILE" ]; then
-              echo ""
-              echo "ERROR: No deployable index.html or _shell.html found."
-              echo ""
-              echo "Available build files:"
-              find dist .output build out \
-                -maxdepth 4 \
-                -type f \
-                2>/dev/null \
-                | sort \
-                | head -300 || true
-
-              exit 1
-            fi
-
-            SITE_DIR="$(dirname "$SHELL_FILE")"
-
-            echo "Found fallback shell:"
-            echo "$SHELL_FILE"
-
-            cp "$SHELL_FILE" "$SITE_DIR/index.html"
-            INDEX_FILE="$SITE_DIR/index.html"
+          if [ ! -d "$SITE_DIR" ]; then
+            echo "ERROR: $SITE_DIR does not exist."
+            exit 1
           fi
 
-          SITE_DIR="$(dirname "$INDEX_FILE")"
+          echo "Build output:"
+          find "$SITE_DIR" -maxdepth 2 -type f | sort
 
-          echo ""
-          echo "Static entry point:"
-          echo "$INDEX_FILE"
-
-          echo ""
-          echo "Static site directory:"
-          echo "$SITE_DIR"
-
-          # Make favicon compatible with GitHub Pages project subpath.
           if [ -f "$SITE_DIR/index.html" ]; then
-            sed -i \
-              's|href="/favicon.ico"|href="./favicon.ico"|g' \
-              "$SITE_DIR/index.html"
+            echo "PASS: index.html already exists."
+
+          elif [ -f "$SITE_DIR/_shell.html" ]; then
+            echo "Creating index.html from TanStack SPA shell."
+            cp "$SITE_DIR/_shell.html" "$SITE_DIR/index.html"
+
+          else
+            echo "ERROR: Neither index.html nor _shell.html exists."
+            exit 1
           fi
 
-          # SPA fallback for direct URL / refresh on GitHub Pages.
+          # GitHub Pages SPA fallback
           cp "$SITE_DIR/index.html" "$SITE_DIR/404.html"
 
-          echo ""
-          echo "Final site files:"
-          find "$SITE_DIR" \
-            -maxdepth 2 \
-            -type f \
-            | sort \
-            | head -200
+          # Fix root-relative favicon for project Pages
+          sed -i \
+            's|href="/favicon.ico"|href="/chain-schoolhouse-play/favicon.ico"|g' \
+            "$SITE_DIR/index.html"
+
+          sed -i \
+            's|href="/favicon.ico"|href="/chain-schoolhouse-play/favicon.ico"|g' \
+            "$SITE_DIR/404.html"
 
           echo ""
-          echo "site_dir=$SITE_DIR" >> "$GITHUB_OUTPUT"
+          echo "Checking generated HTML:"
+          grep -i "<title" "$SITE_DIR/index.html" || true
 
           echo ""
-          echo "=========================================="
-          echo "Static site preparation: PASS"
-          echo "=========================================="
+          echo "Final artifact:"
+          find "$SITE_DIR" -maxdepth 2 -type f | sort
+
+          echo ""
+          echo "Static site preparation PASS"
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ steps.prepare.outputs.site_dir }}
+          path: ./.output/public
 
   deploy:
     environment:
