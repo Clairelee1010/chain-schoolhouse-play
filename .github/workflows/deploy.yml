@@ -2,7 +2,8 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -17,6 +18,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,15 +34,59 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Build
-        # GitHub Pages 服務於 /<repo-name>/ 子路徑，需覆寫 Vite base
+        # GitHub Pages serves this project under /<repo-name>/.
+        # Override the Vite base path so generated assets use the correct subpath.
         run: bun run build --base=/${{ github.event.repository.name }}/
 
       - name: Prepare static site for GitHub Pages
-        # SPA 模式輸出在 dist/client；_shell.html 複製為 index.html 作為進入點，
-        # 並將 favicon 改為相對路徑以適應子路徑部署。
+        shell: bash
         run: |
-          cp dist/client/_shell.html dist/client/index.html
+          set -e
+
+          echo "=========================================="
+          echo "Preparing GitHub Pages static site"
+          echo "=========================================="
+
+          if [ ! -d "dist/client" ]; then
+            echo "ERROR: dist/client directory does not exist."
+            echo "Build output:"
+            find dist -maxdepth 3 -type f 2>/dev/null || true
+            exit 1
+          fi
+
+          echo "Contents of dist/client:"
+          ls -la dist/client
+
+          # Current TanStack Start SPA builds may already generate index.html.
+          # Older output may provide _shell.html instead.
+          if [ -f "dist/client/index.html" ]; then
+            echo "PASS: index.html already exists."
+          elif [ -f "dist/client/_shell.html" ]; then
+            echo "INFO: _shell.html found. Creating index.html."
+            cp dist/client/_shell.html dist/client/index.html
+          else
+            echo "ERROR: Neither index.html nor _shell.html was generated."
+            echo "Available files:"
+            find dist/client -maxdepth 2 -type f
+            exit 1
+          fi
+
+          # Make the favicon path compatible with a GitHub Pages project site.
           sed -i 's|href="/favicon.ico"|href="./favicon.ico"|g' dist/client/index.html
+
+          # SPA fallback:
+          # GitHub Pages serves 404.html for unknown routes.
+          # Using the SPA entry allows the client-side router to handle the route.
+          cp dist/client/index.html dist/client/404.html
+
+          echo ""
+          echo "Final GitHub Pages files:"
+          ls -la dist/client
+
+          echo ""
+          echo "=========================================="
+          echo "GitHub Pages static site prepared"
+          echo "=========================================="
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -51,8 +97,10 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     runs-on: ubuntu-latest
     needs: build
+
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
